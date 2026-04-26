@@ -40,7 +40,11 @@ This installs the tools the project needs (`uflash`, `pyserial`, etc.). If you p
 
 If you use a packaging tool such as `poetry` or `flit`, follow their normal workflows; the dependencies in `pyproject.toml` will be respected by those tools.
 
-5) Flash the micro:bit
+5) Flash the correct firmware to the micro:bit
+
+Follow [these instructions](https://microbit.org/get-started/user-guide/firmware/).
+
+6) Flash the project to the micro:bit
 
 Two common ways to create / install the `.hex` file are shown below.
 
@@ -60,7 +64,7 @@ python -m uflash microbit.py .
 
 This writes `microbit.hex` (or similar) into the current folder; you can then copy that `.hex` onto the MICROBIT drive manually.
 
-6) Open the serial monitor to see game stats (optional)
+7) Open the serial monitor to see game stats (optional)
 
 - Find the COM port for your micro:bit in Windows Device Manager (it appears as a USB Serial Device). You can also list ports from Python:
 

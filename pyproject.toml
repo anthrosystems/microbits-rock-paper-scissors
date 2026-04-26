@@ -1,0 +1,15 @@
+[project]
+name = "microbit-rock-paper-scissors"
+version = "0.1.0"
+description = "Rock Paper Scissors game for the BBC micro:bit"
+requires-python = ">=3.8"
+
+dependencies = [
+  "uflash",
+  "pyserial",
+  "microbit-stubs"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

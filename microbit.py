@@ -76,7 +76,7 @@ def AIDecision(force_random=False):
     return AIMove
 
 
-def weight_calc(player_choice, damping=True): # STUDENTS COULD CHANGE THIS FUNCTION AND SEE HOW THE WAY THE AI PLAYS CHANGES
+def _weight_calc(player_choice, damping=True): # STUDENTS COULD CHANGE THIS FUNCTION AND SEE HOW THE WAY THE AI PLAYS CHANGES
     global RockInfluence, RockWeight
     global PaperInfluence, PaperWeight
     global ScissorsInfluence, ScissorsWeight
@@ -112,7 +112,7 @@ def weight_calc(player_choice, damping=True): # STUDENTS COULD CHANGE THIS FUNCT
 
 
 # See README.md (7)
-def update_weights(player_choice):
+def _update_weights(player_choice):
     global RoundNum, LastPlayerMove, SameMoveStreak
     global RockMoveNum, PaperMoveNum, ScissorsMoveNum
     
@@ -133,7 +133,7 @@ def update_weights(player_choice):
         LastPlayerMove = player_choice
         SameMoveStreak = 1
 
-    weight_calc(player_choice, damping=True)
+    _weight_calc(player_choice, damping=True)
 
 
 PROMPTS = ("A=R", "B=P", "A+B=S")
@@ -218,7 +218,7 @@ def main():
         ai_choice = AIDecision(force_random=is_first_turn)
         
         # See README.md (4-5)
-        update_weights(player_choice)
+        _update_weights(player_choice)
         
         # See README.md (4-6)
         sequence = ["R", "P", "S"]

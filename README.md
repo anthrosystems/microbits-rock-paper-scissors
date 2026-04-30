@@ -6,7 +6,7 @@ This project contains a desktop and a micro:bit version of Rock-Paper-Scissors. 
 
 This file contains the original comments extracted from the in-device program so you can use them when teaching. Keep this file in the project repository rather than flashing it to the micro:bit.
 
-The following documentation assumes that you have a basic understanding of python.
+The following project and its documentation assumes that you have a basic understanding of python and its fundementals.
 
 ## Install Instructions:
 

@@ -76,12 +76,46 @@ def AIDecision(force_random=False):
     return AIMove
 
 
+def weight_calc(player_choice, damping=True): # STUDENTS COULD CHANGE THIS FUNCTION AND SEE HOW THE WAY THE AI PLAYS CHANGES
+    global RockInfluence, RockWeight
+    global PaperInfluence, PaperWeight
+    global ScissorsInfluence, ScissorsWeight
+    
+    # See README.md (7-3a)
+    if damping==True:
+        streak_damping = 1 / (((SameMoveStreak - 1) * 0.5) + 1)
+    else:
+        streak_damping = 1
+    
+    # See README.md (7-3b)
+    if player_choice == 1:
+        RockInfluence += streak_damping
+    elif player_choice == 2:
+        PaperInfluence += streak_damping
+    elif player_choice == 3:
+        ScissorsInfluence += streak_damping
+    
+    # See README.md (7-4a)
+    total_influence = RockInfluence + PaperInfluence + ScissorsInfluence
+    if total_influence == 0:
+        total_influence = 1
+    
+    # See README.md (7-4b)
+    RockWeight = (ScissorsInfluence / total_influence) * 100
+    PaperWeight = (RockInfluence / total_influence) * 100
+    ScissorsWeight = (PaperInfluence / total_influence) * 100
+
+    # See README.md (7-4c)
+    globals()['RockWeight'] = RockWeight
+    globals()['PaperWeight'] = PaperWeight
+    globals()['ScissorsWeight'] = ScissorsWeight
+
+
 # See README.md (7)
 def update_weights(player_choice):
     global RoundNum, LastPlayerMove, SameMoveStreak
-    global RockMoveNum, RockInfluence, RockWeight
-    global PaperMoveNum, PaperInfluence, PaperWeight
-    global ScissorsMoveNum, ScissorsInfluence, ScissorsWeight
+    global RockMoveNum, PaperMoveNum, ScissorsMoveNum
+    
     RoundNum += 1
 
     # See README.md (7-1)
@@ -99,34 +133,48 @@ def update_weights(player_choice):
         LastPlayerMove = player_choice
         SameMoveStreak = 1
 
-    # See README.md (7-3a)
-    streak_damping = 1 / (((SameMoveStreak - 1) * 0.5) + 1)
-    
-    # See README.md (7-3b)
-    if player_choice == 1:
-        RockInfluence += streak_damping
-    elif player_choice == 2:
-        PaperInfluence += streak_damping
-    elif player_choice == 3:
-        ScissorsInfluence += streak_damping
-
-    # See README.md (7-4a)
-    total_influence = RockInfluence + PaperInfluence + ScissorsInfluence
-    if total_influence == 0:
-        total_influence = 1
-    
-    # See README.md (7-4b)
-    RockWeight = (ScissorsInfluence / total_influence) * 100
-    PaperWeight = (RockInfluence / total_influence) * 100
-    ScissorsWeight = (PaperInfluence / total_influence) * 100
-
-    # See README.md (7-4c)
-    globals()['RockWeight'] = RockWeight
-    globals()['PaperWeight'] = PaperWeight
-    globals()['ScissorsWeight'] = ScissorsWeight
+    weight_calc(player_choice, damping=True)
 
 
 PROMPTS = ("A=R", "B=P", "A+B=S")
+# helper: manual scroll + poll (avoid wait=False rendering issues)
+def _poll_buttons_debounced():
+    if button_a.is_pressed() and button_b.is_pressed():
+        while button_a.is_pressed() or button_b.is_pressed():
+            sleep(100)
+        display.clear()
+        return 3
+    if button_a.is_pressed():
+        while button_a.is_pressed():
+            sleep(100)
+        display.clear()
+        return 1
+    if button_b.is_pressed():
+        while button_b.is_pressed():
+            sleep(100)
+        display.clear()
+        return 2
+    return None
+
+
+def _manual_scroll_and_poll(msg, char_delay=300, poll_interval=50):
+    """Show message one character at a time and poll buttons between frames.
+
+    Returns 1/2/3 if a button combo is detected, otherwise None.
+    """
+    padding = "     "
+    text = msg + padding
+    for ch in text:
+        display.show(ch)
+        elapsed = 0
+        while elapsed < char_delay:
+            choice = _poll_buttons_debounced()
+            if choice is not None:
+                return choice
+            sleep(poll_interval)
+            elapsed += poll_interval
+    return None
+
 
 # See README.md (4)
 def main():
@@ -158,31 +206,9 @@ def main():
         player_choice = None
         while True:
             for msg in PROMPTS:
-                display.scroll(msg, delay=30, wait=False)
-                for _ in range(10):
-                    if button_a.is_pressed() and button_b.is_pressed():
-                        while button_a.is_pressed() or button_b.is_pressed():
-                            sleep(100)
-                        display.clear()
-                        player_choice = 3
-                        break
-
-                    if button_a.is_pressed():
-                        while button_a.is_pressed():
-                            sleep(100)
-                        display.clear()
-                        player_choice = 1
-                        break
-
-                    if button_b.is_pressed():
-                        while button_b.is_pressed():
-                            sleep(100)
-                        display.clear()
-                        player_choice = 2
-                        break
-
-                    sleep(50)
-                if player_choice is not None:
+                choice = _manual_scroll_and_poll(msg)
+                if choice is not None:
+                    player_choice = choice
                     break
             if player_choice is not None:
                 break
